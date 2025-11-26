@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flame/collisions.dart'; // Added missing import for CollisionCallbacks
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -412,6 +413,9 @@ class Player extends PositionComponent with HasGameRef<KidsAdventureGame>, Colli
     // Eyes
     add(CircleComponent(radius: 4, position: Vector2(10, 10), paint: Paint()..color = Colors.white));
     add(CircleComponent(radius: 4, position: Vector2(26, 10), paint: Paint()..color = Colors.white));
+    
+    // Add Hitbox for collision detection
+    add(RectangleHitbox());
   }
 
   @override
@@ -428,6 +432,8 @@ class Player extends PositionComponent with HasGameRef<KidsAdventureGame>, Colli
     position += velocity * dt;
 
     // Simple Collision Detection (AABB)
+    // Note: We are doing manual collision checks here for platforming physics
+    // The CollisionCallbacks mixin is available if we want to use onCollision events later
     isOnGround = false;
     for (final component in gameRef.children) {
       if (component is Platform) {
@@ -491,6 +497,7 @@ class Platform extends PositionComponent {
       position: Vector2(0, 0),
       paint: Paint()..color = Colors.lightGreenAccent,
     ));
+    add(RectangleHitbox());
   }
 }
 
@@ -510,6 +517,7 @@ class Collectible extends PositionComponent with HasGameRef<KidsAdventureGame> {
       position: Vector2(5, 5),
       paint: Paint()..color = Colors.yellow,
     ));
+    add(CircleHitbox());
   }
 
   void collect() {
@@ -539,6 +547,7 @@ class Enemy extends PositionComponent {
     // Angry Eyes
     add(RectangleComponent(size: Vector2(10, 5), position: Vector2(5, 10), paint: Paint()..color = Colors.white));
     add(RectangleComponent(size: Vector2(10, 5), position: Vector2(25, 10), paint: Paint()..color = Colors.white));
+    add(RectangleHitbox());
   }
 
   @override
